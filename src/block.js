@@ -3,6 +3,7 @@ Block = cc.Node.extend({
     block:null,
     level:1,
 
+    //初始化一个方块
     Block:function(){
         this.block = cc.Sprite.create(s_Block1);
         this.block.setAnchorPoint(0,0);
@@ -11,6 +12,7 @@ Block = cc.Node.extend({
         this.setAnchorPoint(0,0);
     },
 
+    //合并之后方块的值发生改变
     changeValue:function(){
         this.level++;
         var texture;
@@ -32,6 +34,7 @@ Block = cc.Node.extend({
         return(this.level == 11);
     },
 
+    //返回方块当前的值
     getValue:function(){
         return(Math.pow(2, this.level));
     }
