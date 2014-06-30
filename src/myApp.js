@@ -24,55 +24,124 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-var MyLayer = cc.Layer.extend({
-    isMouseDown:false,
-    helloImg:null,
-    helloLabel:null,
-    circle:null,
-    sprite:null,
+var MyLayer;
+MyLayer = cc.Layer.extend({
+    isMouseDown: false,
+    helloLabel: null,
+    firstX:0,
+    firstY:0,
+    endX:0,
+    endY:0,
+    panel:null,
+    pScore:null,
 
-    init:function () {
+    init: function () {
 
         //////////////////////////////
         // 1. super init first
         this._super();
+        var director = cc.Director.getInstance();
+        var size = director.getVisibleSize();
 
-        /////////////////////////////
-        // 2. add a menu item with "X" image, which is clicked to quit the program
-        //    you may modify it.
-        // ask director the window size
-        var size = cc.Director.getInstance().getWinSize();
+        var bglayer = cc.LayerColor.create(cc.c4b(247,248,232,255));
+        bglayer.setAnchorPoint(0, 0);
+        bglayer.setPosition(0, 0);
+        this.addChild(bglayer);
 
-        // add a "close" icon to exit the progress. it's an autorelease object
-        var closeItem = cc.MenuItemImage.create(
-            s_CloseNormal,
-            s_CloseSelected,
-            function () {
-                cc.log("close");
-            },this);
-        closeItem.setAnchorPoint(0.5, 0.5);
+        var replayButton = cc.MenuItemImage.create(
+            s_ReplayGame,
+            s_ReplayGame,
+            this.replay,
+            this);
+        replayButton.setAnchorPoint(0.5, 0.5);
 
-        var menu = cc.Menu.create(closeItem);
+        var menu = cc.Menu.create(replayButton);
         menu.setPosition(0, 0);
         this.addChild(menu, 1);
-        closeItem.setPosition(size.width - 20, 20);
+        replayButton.setPosition(size.width / 2, size.height / 8);
 
-        /////////////////////////////
-        // 3. add your codes below...
-        // add a label shows "Hello World"
-        // create and initialize a label
-        this.helloLabel = cc.LabelTTF.create("Hello World", "Impact", 38);
+        this.setTouchEnabled(true);
+        director.getTouchDispatcher()._addTargetedDelegate(this, -127, true);
+
+        this.helloLabel = cc.LabelTTF.create("score", "Impact", 48);
+        this.helloLabel.setColor(cc.c3b(0, 0, 0));
         // position the label on the center of the screen
-        this.helloLabel.setPosition(size.width / 2, size.height - 40);
+        this.helloLabel.setPosition(size.width / 2, size.height - this.helloLabel.getContentSize().height);
         // add the label as a child to this layer
         this.addChild(this.helloLabel, 5);
 
-        // add "Helloworld" splash screen"
-        this.sprite = cc.Sprite.create(s_HelloWorld);
-        this.sprite.setAnchorPoint(0.5, 0.5);
-        this.sprite.setPosition(size.width / 2, size.height / 2);
-        this.sprite.setScale(size.height/this.sprite.getContentSize().height);
-        this.addChild(this.sprite, 0);
+        this.setAGame();
+
+    },
+
+    setAGame: function(){
+        var director = cc.Director.getInstance();
+        var size = director.getVisibleSize();
+
+        this.panel = new Panel();
+        this.panel.Panel();
+        this.panel.setTag(1);
+        this.addChild(this.panel);
+
+        var score = this.panel.getScore();
+        this.pScore = cc.LabelTTF.create(score.toString(), "Impact", 48);
+        this.pScore.setColor(cc.c3b(0,0,0));
+        this.pScore.setPosition(size.width / 2, size.height - 120);
+        this.pScore.setTag(2);
+        this.addChild(this.pScore);
+    },
+
+    replay:function(){
+        this.removeChildByTag(1);
+        this.removeChildByTag(2);
+        this.setAGame();
+    },
+
+    onTouchBegan:function(touch, event){
+        this.firstX = touch.getLocation().x;
+        this.firstY = touch.getLocation().y;
+        return true;
+    },
+
+    onTouchEnded:function(touch, event){
+        this.endX = touch.getLocation().x;
+        this.endY = touch.getLocation().y;
+        var lengthX = this.endX - this.firstX;
+        var lengthY = this.endY - this.firstY;
+        var flag = false;
+        if(Math.abs(lengthX) > Math.abs(lengthY)){
+            if(lengthX > 30){
+                flag = this.panel.move(2);//右
+                this.gameover(flag);
+            }
+            else if(lengthX < -30){
+                flag = this.panel.move(3);//左
+                this.gameover(flag);
+            }
+        }
+        else{
+            if(lengthY > 30){
+                flag = this.panel.move(0);//上
+                this.gameover(flag);
+            }
+            else if(lengthY < -30){
+                flag = this.panel.move(1);//下
+                this.gameover(flag);
+            }
+        }
+        return true;
+    },
+
+    gameover:function(flag){
+        if(flag){
+            var score = this.panel.getScore();
+            this.pScore.setString(score.toString());
+        }
+        else{
+            var gameoverScene = new GameOverScene();
+            gameoverScene.initLayerWithScore(this.panel.getScore());
+            cc.Director.getInstance().replaceScene(gameoverScene);
+        }
     }
 });
 
