@@ -39,10 +39,7 @@
         //SingleEngineFile:'',
         appFiles:[
             'src/resource.js',
-            'src/myApp.js',//add your own files in order here
-            'src/panel.js',
-            'src/block.js',
-            'src/gameoverScene.js'
+            'src/myApp.js'//add your own files in order here
         ]
     };
 

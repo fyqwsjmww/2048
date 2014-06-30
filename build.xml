@@ -217,10 +217,7 @@
             <sources dir="${basedir}">
                 <file name="src/resource.js"/>
                 <file name="src/myApp.js"/>
-                <file name="src/panel.js"/>
                 <file name="main.js"/>
-                <file name="src/block.js"/>
-                <file name="gameoverScene.js"/>
             </sources>
         </jscomp>
     </target>
