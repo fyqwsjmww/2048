@@ -63,6 +63,7 @@ MyLayer = cc.Layer.extend({
         replayButton.setPosition(size.width / 2, size.height / 8);
 
         //设置为响应点击
+        this.setKeyboardEnabled(true);
         this.setTouchEnabled(true);
         director.getTouchDispatcher()._addTargetedDelegate(this, -127, true);
 
@@ -139,6 +140,25 @@ MyLayer = cc.Layer.extend({
             }
         }
         return true;
+    },
+
+    onKeyDown:function(keyCode){
+        if(keyCode == cc.KEY.left){
+            flag = this.panel.move(3);//左
+            this.gameover(flag);
+        }
+        if(keyCode == cc.KEY.right){
+            flag = this.panel.move(2);//右
+            this.gameover(flag);
+        }
+        if(keyCode == cc.KEY.up){
+            flag = this.panel.move(0);//上
+            this.gameover(flag);
+        }
+        if(keyCode == cc.KEY.down){
+            flag = this.panel.move(1);//下
+            this.gameover(flag);
+        }
     },
 
     gameover:function(flag){
